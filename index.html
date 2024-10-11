@@ -56,38 +56,34 @@
 
 
 <script>
+    const qiblaLat = 21.4225; // Latitude Ka'bah
+    const qiblaLon = 39.8262; // Longitude Ka'bah
+
     function getQiblaDirection(lat, lon) {
-        const qiblaLat = 21.4225; // Latitude Ka'bah
-        const qiblaLon = 39.8262; // Longitude Ka'bah
         const deltaLon = qiblaLon - lon;
-        const x = Math.cos(qiblaLat * Math.PI / 180) * Math.sin(deltaLon * Math.PI / 180);
-        const y = Math.cos(lat * Math.PI / 180) * Math.sin(qiblaLat * Math.PI / 180) - Math.sin(lat * Math.PI / 180) * Math.cos(qiblaLat * Math.PI / 180) * Math.cos(deltaLon * Math.PI / 180);
-        const angle = Math.atan2(x, y) * (180 / Math.PI);
-        return (angle + 360) % 360; // Convert to positive angle
+        const x = Math.sin(deltaLon * Math.PI / 180) * Math.cos(lat * Math.PI / 180);
+        const y = Math.cos(qiblaLat * Math.PI / 180) * Math.sin(lat * Math.PI / 180) - Math.sin(qiblaLat * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * Math.cos(deltaLon * Math.PI / 180);
+        return (Math.atan2(x, y) * (180 / Math.PI) + 360) % 360;
     }
 
-    function setQiblaDirection() {
+    $(document).ready(function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 const userLat = position.coords.latitude;
                 const userLon = position.coords.longitude;
                 const qiblaDirection = getQiblaDirection(userLat, userLon);
-
-                $('#needle').css('transform', `rotate(${qiblaDirection}deg)`);
+                
+                // Update needle with device orientation
+                window.addEventListener('deviceorientation', function(event) {
+                    const rotationAngle = (qiblaDirection - event.alpha + 360) % 360;
+                    $('#needle').css('transform', `rotate(${rotationAngle}deg)`);
+                });
             }, function() {
                 alert("Unable to retrieve your location.");
             });
         } else {
             alert("Geolocation is not supported by this browser.");
         }
-    }
-
-    $(document).ready(function() {
-        setQiblaDirection();
-
-        $('#refresh').click(function() {
-            setQiblaDirection();
-        });
     });
 </script>
 
