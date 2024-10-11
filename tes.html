@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Device Orientation</title>
+</head>
+<body>
+    <h1>Device Orientation Test</h1>
+    <p id="output">Move your device!</p>
+    
+    <script>
+        window.addEventListener('deviceorientation', function(event) {
+            var alpha = event.alpha; // Arah utara
+            var beta = event.beta;   // Kemiringan depan
+            var gamma = event.gamma; // Kemiringan samping
+            
+            document.getElementById('output').innerText =
+                'Alpha: ' + alpha + '\n' +
+                'Beta: ' + beta + '\n' +
+                'Gamma: ' + gamma;
+        });
+    </script>
+</body>
+</html>
